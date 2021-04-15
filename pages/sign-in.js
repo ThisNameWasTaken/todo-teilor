@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Router from 'next/router';
 import { useState } from 'react';
 import {
   makeStyles,
@@ -19,6 +20,7 @@ import { useForm } from 'react-hook-form';
 import Facebook from '../components/icons/facebook';
 import Google from '../components/icons/google';
 import Twitter from '../components/icons/twitter';
+import firebase from '../utils/firebase';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -90,11 +92,33 @@ export default function SignIn() {
     setIsPasswordVisible((isVisible) => !isVisible);
   }
 
+  const [firebaseError, setFirebaseError] = useState(null);
+
   /**
    * @param {{ email: string, password: string }} param
    */
   async function signIn({ email, password }) {
-    console.log({ email, password });
+    setFirebaseError(null);
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+
+      Router.push('/todos');
+    } catch (err) {
+      setFirebaseError(err.message);
+      console.error(err);
+    }
+  }
+
+  async function signInWithGoogle() {
+    try {
+      await firebase
+        .auth()
+        .signInWithPopup(new firebase.auth.GoogleAuthProvider());
+
+      Router.push('/todos');
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (
@@ -122,7 +146,10 @@ export default function SignIn() {
                     title="Sign in with Google"
                     aria-label="Sign in with Google"
                   >
-                    <Fab className={classes.fabGoogle}>
+                    <Fab
+                      className={classes.fabGoogle}
+                      onClick={signInWithGoogle}
+                    >
                       <Google className={classes.fabIcon} />
                     </Fab>
                   </Tooltip>
@@ -217,6 +244,11 @@ export default function SignIn() {
                 }}
               />
             </Grid>
+            {firebaseError && (
+              <Grid item>
+                <Typography color="error">{firebaseError}</Typography>
+              </Grid>
+            )}
             <Grid item>
               <Grid container direction="row" spacing={3}>
                 <Grid item xs>
