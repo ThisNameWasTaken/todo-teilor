@@ -6,6 +6,7 @@ import {
   ListItemText,
 } from '@material-ui/core';
 import Skeleton from '@material-ui/lab/Skeleton';
+import clsx from 'clsx';
 
 import { useStyles } from './styles';
 
@@ -17,14 +18,28 @@ const UserInfo = ({ user }) => {
       <ListItemAvatar>
         {user ? (
           <Avatar className={classes.avatar}>
-            {user.photoUrl ? (
-              <img src={user.photoUrl} alt={''} width={40} height={40} />
+            <Skeleton
+              className={clsx(classes.textSkeleton, classes.avatarSkeleton)}
+              animation="wave"
+              variant="rect"
+              width={40}
+              height={40}
+            />
+            {user.photoURL ? (
+              <img
+                src={user.photoURL}
+                alt={''}
+                width={40}
+                height={40}
+                className={classes.avatarImage}
+              />
             ) : (
               <>
-                {user.displayName
-                  .split(' ')
-                  .slice(0, 2)
-                  .reduce((acc, word) => acc + word[0], '')}
+                {user.displayName &&
+                  user.displayName
+                    .split(' ')
+                    .slice(0, 2)
+                    .reduce((acc, word) => acc + word[0], '')}
               </>
             )}
           </Avatar>

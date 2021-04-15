@@ -22,6 +22,14 @@ const useStyles = makeStyles((theme) => ({
     opacity: 0.22,
     borderRadius: '50%',
   },
+  avatarSkeleton: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+  avatarImage: {
+    zIndex: 1,
+  },
 }));
 
 export { useStyles };

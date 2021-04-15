@@ -19,13 +19,14 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function TabBar() {
+export default function TabBar({ onTabChange = (value) => {} }) {
   const scrollDirection = useScrollDirection();
   const classes = useStyles();
   const [value, setValue] = useState('active');
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    onTabChange(newValue);
   };
 
   return (

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Router from 'next/router';
 import {
   List,
   ListItem,
@@ -7,12 +8,13 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  TextField,
   Typography,
   makeStyles,
 } from '@material-ui/core';
-import { Delete, Done, Edit, MoreVert, Save, Close } from '@material-ui/icons';
+import { Delete, Done, Edit, MoreVert } from '@material-ui/icons';
 import { List as VirtualizedList, WindowScroller } from 'react-virtualized';
+import useUser from '../../hooks/useUser';
+import firebase from '../../utils/firebase';
 
 const useToDoListStyles = makeStyles((theme) => ({
   list: {
@@ -25,17 +27,53 @@ const useToDoListStyles = makeStyles((theme) => ({
   listItemText: {
     marginRight: theme.spacing(4),
   },
+  nothingToDo: {
+    opacity: 0.8,
+    height: 'calc(var(--vh, 1vh) * 100 - 72px - 48px)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
 }));
 
 /**
  *
  * @param {{
- *  items: { title: string, dueTime: string, id:string }[]
+ *  items: { title: string, dueTime: string, id:string, status: 'active' | 'completed' }[]
  * }} props
  * @returns
  */
 export default function ToDoList({ items }) {
   const classes = useToDoListStyles();
+  const user = useUser();
+
+  function getToDoPath(item) {
+    return firebase
+      .firestore()
+      .collection('users')
+      .doc(user.uid)
+      .collection('todos')
+      .doc(item.id);
+  }
+
+  function removeToDo(item) {
+    console.log('removing', { item });
+    return getToDoPath(item).delete();
+  }
+
+  function completeToDo(item) {
+    console.log('completing', { item });
+    return getToDoPath(item).update({
+      status: 'completed',
+    });
+  }
+
+  function editToDo(item) {
+    Router.push(
+      `/add-todo?edit=${item.id}&title=${item.title}&dueTime=${item.dueTime}`
+    );
+  }
 
   function rowRenderer({ key, index, style }) {
     const item = items[index];
@@ -46,20 +84,39 @@ export default function ToDoList({ items }) {
           <ListItemText
             className={classes.listItemText}
             primary={<Typography noWrap>{item.title}</Typography>}
-            secondary={<Typography noWrap>{item.dueTime}</Typography>}
+            secondary={
+              <Typography noWrap>
+                {item.dueTime.split('T')[0]} {item.dueTime.split('T')[1]}
+              </Typography>
+            }
           />
-          <ListItemSecondaryAction>
-            <IconButton edge="end" aria-label="done" color="secondary">
-              <Done />
-            </IconButton>
-            <MoreOptions item={item} />
-          </ListItemSecondaryAction>
+          {item.status === 'active' && (
+            <ListItemSecondaryAction>
+              <IconButton
+                edge="end"
+                aria-label="done"
+                color="secondary"
+                onClick={() => completeToDo(item)}
+              >
+                <Done />
+              </IconButton>
+              <MoreOptions
+                item={item}
+                onRemove={() => removeToDo(item)}
+                onEdit={() => editToDo(item)}
+              />
+            </ListItemSecondaryAction>
+          )}
         </ListItem>
       </div>
     );
   }
 
-  return (
+  return items.length === 0 ? (
+    <div className={classes.nothingToDo}>
+      <Typography variant="h4">You have nothing to do ¯\_(ツ)_/¯</Typography>
+    </div>
+  ) : (
     <List className={classes.list}>
       <WindowScroller>
         {({ height, isScrolling, onChildScroll, scrollTop, width }) => (

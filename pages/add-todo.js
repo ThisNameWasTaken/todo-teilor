@@ -1,4 +1,4 @@
-import Router from 'next/router';
+import Router, { useRouter } from 'next/router';
 import {
   makeStyles,
   Button,
@@ -9,7 +9,11 @@ import {
   Toolbar,
 } from '@material-ui/core';
 import { useForm } from 'react-hook-form';
+
 import BackButton from '../components/BackButton';
+import firebase from '../utils/firebase';
+import useUser from '../hooks/useUser';
+import { useEffect, useState } from 'react';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -50,6 +54,11 @@ function getNowDate() {
 }
 
 export default function AddToDo() {
+  const router = useRouter();
+  const query = router.query;
+
+  const buttonText = query.edit ? 'edit to do' : 'add to do';
+
   const classes = useStyles();
   const {
     handleSubmit,
@@ -57,13 +66,31 @@ export default function AddToDo() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      'due time': `${getNowDate()}T${getNowTime()}`,
-      title: '',
+      'due time': query.dueTime || `${getNowDate()}T${getNowTime()}`,
+      title: query.title || '',
     },
   });
+  const user = useUser();
 
   async function addToDo(params) {
     console.log({ params });
+
+    try {
+      await firebase
+        .firestore()
+        .collection('users')
+        .doc(user.uid)
+        .collection('todos')
+        .add({
+          title: params.title,
+          dueTime: params['due time'],
+          status: 'active',
+        });
+
+      Router.back();
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (
@@ -116,7 +143,7 @@ export default function AddToDo() {
                       variant="contained"
                       type="submit"
                     >
-                      add todo
+                      {buttonText}
                     </Button>
                   </Grid>
                 </Grid>

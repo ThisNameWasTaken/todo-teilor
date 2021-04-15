@@ -27,6 +27,7 @@ import { useForm } from 'react-hook-form';
 import { Slides, Slide } from '../components/slides';
 import AvatarEdit from '../components/AvatarEdit';
 import RegisterInfo from '../components/RegisterInfo/RegisterInfo';
+import firebase from '../utils/firebase';
 
 const Connector = withStyles((theme) => ({
   alternativeLabel: {
@@ -191,7 +192,6 @@ export default function SignUp() {
     password: '',
     name: '',
     avatar: '',
-    alt: '',
   });
 
   const credentialsForm = useForm();
@@ -256,7 +256,42 @@ export default function SignUp() {
     setIsPasswordVisible((isVisible) => !isVisible);
   }
 
-  async function onRegister() {}
+  async function onRegister() {
+    try {
+      const auth = firebase.auth();
+      await auth.createUserWithEmailAndPassword(
+        formData.email,
+        formData.password
+      );
+      const { user } = await auth.signInWithEmailAndPassword(
+        formData.email,
+        formData.password
+      );
+      const storage = firebase.storage();
+      if (formData.avatar && formData.avatar[0]) {
+        const storageRef = await storage.ref();
+        console.log({ formData });
+        const fileUploadPath = `avatars/users/${user.uid}/${formData.avatar[0].name}`;
+        const uploadResult = await storageRef
+          // @ts-ignore
+          .child(fileUploadPath)
+          // @ts-ignore
+          .put(formData.avatar[0]);
+
+        const photoURL = await storageRef
+          .child(fileUploadPath)
+          .getDownloadURL();
+
+        await user.updateProfile({
+          displayName: formData.name,
+          photoURL,
+        });
+      }
+      Router.push('/todos');
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   async function onNextStep() {
     try {
@@ -288,7 +323,6 @@ export default function SignUp() {
       nameForm.setValue('name', formData.name);
     } else if (activeStep === 2) {
       avatarForm.setValue('avatar', formData.avatar);
-      avatarForm.setValue('alt', formData.alt);
     }
   }, [activeStep]);
 
@@ -300,8 +334,8 @@ export default function SignUp() {
       const { name } = nameForm.getValues();
       setFormData((formData) => ({ ...formData, name }));
     } else if (prevActiveStep === 2) {
-      const { avatar, alt } = avatarForm.getValues();
-      setFormData((formData) => ({ ...formData, avatar, alt }));
+      const { avatar } = avatarForm.getValues();
+      setFormData((formData) => ({ ...formData, avatar }));
     }
   }, [prevActiveStep]);
 

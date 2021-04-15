@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import useScrollDirection from '../../hooks/useScrollDirection';
 import SignOutButton from '../SignOutButton';
 import UserInfo from '../UserInfo';
+import useUser from '../../hooks/useUser';
 
 const useStyles = makeStyles((theme) => ({
   actionsDivider: {
@@ -24,12 +25,8 @@ const useStyles = makeStyles((theme) => ({
 export default function NavBar() {
   const classes = useStyles();
   const scrollDirection = useScrollDirection();
-  const currentUser = {
-    email: 'adriandinca2008@gmail.com',
-    displayName: 'Adrian Dinca',
-    // photoUrl:
-    // 'https://images.pexels.com/photos/869258/pexels-photo-869258.jpeg?cs=srgb&dl=pexels-flo-maderebner-869258.jpg&fm=jpg',
-  };
+
+  const user = useUser();
 
   return (
     <AppBar
@@ -41,7 +38,7 @@ export default function NavBar() {
     >
       <Toolbar variant="dense">
         <List>
-          <UserInfo user={currentUser} />
+          <UserInfo user={user} />
         </List>
         <div className={classes.actionsDivider} />
         <SignOutButton />
