@@ -1,25 +1,24 @@
 import { IconButton } from '@material-ui/core';
-
-import SignOutIcon from './SignOutIcon';
-// import { useFirebase } from '../../hooks/useFirebase';
-import { useStyles } from './styles';
 import { useRouter } from 'next/router';
+
+import firebase from '../../utils/firebase';
+import SignOutIcon from './SignOutIcon';
+import { useStyles } from './styles';
 
 const SignOutButton = (props) => {
   const classes = useStyles();
-  // const firebase = useFirebase();
   const router = useRouter();
 
   async function signOut() {
-    // const auth = await firebase.auth();
+    const auth = await firebase.auth();
 
-    // auth.signOut();
+    auth.signOut();
     router.push('/sign-in');
   }
 
   return (
     <IconButton
-      aria-label="log out"
+      aria-label="sign out"
       color="inherit"
       onClick={signOut}
       {...props}
