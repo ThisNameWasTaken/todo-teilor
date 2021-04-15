@@ -145,6 +145,9 @@ const useMoreOptionsStyles = makeStyles((theme) => ({
   menuItemDanger: {
     color: theme.palette.error.main,
   },
+  menuItem: {
+    color: theme.palette.primary.main,
+  },
 }));
 
 function MoreOptions({
@@ -205,7 +208,7 @@ function MoreOptions({
         open={Boolean(anchorEl)}
         onClose={closeMenu}
       >
-        <MenuItem onClick={edit}>
+        <MenuItem onClick={edit} className={classes.menuItem}>
           <Edit className={classes.menuIcon} />
           Edit
         </MenuItem>
