@@ -15,6 +15,8 @@ import {
   InputAdornment,
   Tooltip,
   IconButton,
+  AppBar,
+  Toolbar,
 } from '@material-ui/core';
 import {
   ArrowBack,
@@ -174,6 +176,11 @@ const useStyles = makeStyles((theme) => ({
   },
   confirmButton: {
     display: 'block',
+  },
+  container: {
+    maxWidth: 1330,
+    width: '100%',
+    margin: 'auto',
   },
 }));
 
@@ -341,15 +348,19 @@ export default function SignUp() {
 
   return (
     <>
-      <nav className={classes.nav}>
-        <Button
-          onClick={() => Router.push('/sign-in')}
-          color="primary"
-          startIcon={<ArrowBack />}
-        >
-          Back to sign in
-        </Button>
-      </nav>
+      <AppBar color="transparent" elevation={0}>
+        <Toolbar>
+          <div className={classes.container}>
+            <Button
+              onClick={() => Router.push('/sign-in')}
+              color="primary"
+              startIcon={<ArrowBack />}
+            >
+              Back to sign in
+            </Button>
+          </div>
+        </Toolbar>
+      </AppBar>
 
       <main>
         <div className={classes.root}>

@@ -1,6 +1,5 @@
 import { AppBar, Toolbar, List, makeStyles } from '@material-ui/core';
 import clsx from 'clsx';
-import { useEffect, useState } from 'react';
 import useScrollDirection from '../../hooks/useScrollDirection';
 import SignOutButton from '../SignOutButton';
 import UserInfo from '../UserInfo';
@@ -20,6 +19,12 @@ const useStyles = makeStyles((theme) => ({
   navBarHidden: {
     transform: 'translateY(-100%)',
   },
+  container: {
+    maxWidth: 1330,
+    width: '100%',
+    margin: 'auto',
+    display: 'flex',
+  },
 }));
 
 export default function NavBar() {
@@ -37,11 +42,13 @@ export default function NavBar() {
       )}
     >
       <Toolbar variant="dense">
-        <List>
-          <UserInfo user={user} />
-        </List>
-        <div className={classes.actionsDivider} />
-        <SignOutButton />
+        <div className={classes.container}>
+          <List>
+            <UserInfo user={user} />
+          </List>
+          <div className={classes.actionsDivider} />
+          <SignOutButton />
+        </div>
       </Toolbar>
     </AppBar>
   );

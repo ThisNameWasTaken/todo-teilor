@@ -8,13 +8,23 @@ import TabBar from '../components/TabBar/TabBar';
 import SkeletonToDoList from '../components/ToDoList/SkeletonToDoList';
 import useToDos from '../hooks/useToDos';
 import { useEffect, useState } from 'react';
+import { makeStyles } from '@material-ui/core';
 
 const ToDoList = dynamic(() => import('../components/ToDoList/ToDoList'), {
   loading: SkeletonToDoList,
   ssr: false,
 });
 
+const useStyles = makeStyles((theme) => ({
+  container: {
+    maxWidth: 1330,
+    width: '100%',
+    margin: 'auto',
+  },
+}));
+
 export default function ToDos() {
+  const classes = useStyles();
   const activeTodos = useToDos('active');
   const completedTodos = useToDos('completed');
   const [todoList, setTodoList] = useState(activeTodos);
@@ -38,7 +48,9 @@ export default function ToDos() {
     <div style={{ paddingTop: 72 + 48 }}>
       <NavBar />
       <TabBar onTabChange={onTabChange} />
-      {!todoList ? <SkeletonToDoList /> : <ToDoList items={todoList} />}
+      <main className={classes.container}>
+        {!todoList ? <SkeletonToDoList /> : <ToDoList items={todoList} />}
+      </main>
       <ExtendedFAB
         icon={<Add />}
         label="Add To Do"

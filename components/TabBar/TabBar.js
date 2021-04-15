@@ -17,6 +17,11 @@ const useStyles = makeStyles((theme) => ({
   tabBarScrolled: {
     transform: 'translateY(-72px)',
   },
+  tabs: {
+    maxWidth: 1330,
+    width: '100%',
+    margin: 'auto',
+  },
 }));
 
 export default function TabBar({ onTabChange = (value) => {} }) {
@@ -38,6 +43,7 @@ export default function TabBar({ onTabChange = (value) => {} }) {
       )}
     >
       <Tabs
+        className={classes.tabs}
         value={value}
         onChange={handleChange}
         aria-label="wrapped label tabs example"
