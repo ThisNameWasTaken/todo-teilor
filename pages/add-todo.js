@@ -73,19 +73,31 @@ export default function AddToDo() {
   const user = useUser();
 
   async function addToDo(params) {
+    console.log('add to do');
     console.log({ params });
 
+    console.log({ query });
+
     try {
-      await firebase
+      const docPath = firebase
         .firestore()
         .collection('users')
         .doc(user.uid)
-        .collection('todos')
-        .add({
+        .collection('todos');
+
+      if (!query.edit) {
+        await docPath.add({
           title: params.title,
           dueTime: params['due time'],
           status: 'active',
         });
+      } else {
+        // @ts-ignore
+        await docPath.doc(query.edit).update({
+          title: params.title,
+          dueTime: params['due time'],
+        });
+      }
 
       Router.back();
     } catch (err) {
