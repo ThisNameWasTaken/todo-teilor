@@ -17,9 +17,9 @@ import {
 import { Visibility, VisibilityOff } from '@material-ui/icons';
 import { useForm } from 'react-hook-form';
 
-import Facebook from '../components/icons/facebook';
-import Google from '../components/icons/google';
-import Twitter from '../components/icons/twitter';
+import Facebook from '../components/icons/Facebook';
+import Google from '../components/icons/Google';
+import Twitter from '../components/icons/Twitter';
 import firebase from '../utils/firebase';
 
 const useStyles = makeStyles((theme) => ({
